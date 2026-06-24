@@ -201,7 +201,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
       <span class="venue">arXiv 2026 · 2605.13129</span>
       <p>Rig-aware latents that jointly generate geometry + skeleton + skin weights, so assets are born rigged.</p>
       <div class="why">Bullseye for authoring our base archetypes already rigged — collapses generate+rig into one step.</div>
-      <div class="foot"><span class="badge no">No code</span><a class="alink" href="https://arxiv.org/abs/2605.13129" target="_blank" rel="noopener">arXiv ↗</a></div>
+      <div class="foot"><span class="badge no">No code yet</span><a class="alink" href="https://arxiv.org/abs/2605.13129" target="_blank" rel="noopener">arXiv ↗</a></div>
     </article>
     <article class="pcard glass reveal">
       <span class="rank">TOP 3</span>
@@ -209,12 +209,12 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
       <span class="venue">SIGGRAPH 2026 · ACM TOG</span>
       <p>Artist mesh generation with native UV segmentation — clean quad/tri edge-flow and ready-made UV charts.</p>
       <div class="why">Fixes the topology + UV loss from our decimation step, giving bake-ready charts for texturing.</div>
-      <div class="foot"><span class="badge no">No code (placeholder)</span><a class="alink" href="https://arxiv.org/abs/2604.09132" target="_blank" rel="noopener">arXiv ↗</a></div>
+      <div class="foot"><span class="badge flag">Code coming soon</span><a class="alink" href="https://arxiv.org/abs/2604.09132" target="_blank" rel="noopener">arXiv ↗</a></div>
     </article>
   </div>
 
   <div class="build flagged reveal">
-    <div class="build-head"><span class="tag">Built? · Flagged</span><h3>MatLat — toolchain-blocked on this box</h3></div>
+    <div class="build-head"><span class="tag">Flagged · toolchain</span><h3>MatLat — toolchain-blocked on this box</h3></div>
     <p class="sub">MatLat's inference render core is <code>nvdiffrast</code> (rasterize / interpolate / texture / antialias) which JIT-compiles CUDA, plus <code>cvcuda</code> for UV padding. This machine has no <code>nvcc</code> / MSVC and no CUDA Toolkit, so the renderer can't build — and per the A4D pilot, installing that toolchain was deliberately avoided. The <b>authors' own published results</b> (not ours) live on their project page — linked below to avoid rehosting their media — and illustrate the capability we'd gain once a compiler is available.</p>
     <div class="callout info" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
       <span>MatLat result clips are the authors' own media.</span>
@@ -239,7 +239,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
       <span class="venue">arXiv 2026 · 2601.06378</span>
       <p>Unifies rig + motion learning from raw mesh sequences (Gaussian bones + skin), with a Motion-DiT for generation. Works on quadrupeds (fox).</p>
       <div class="why">Could auto-discover rig and generate motion straight from a deforming mesh — a path past hand-keying.</div>
-      <div class="foot"><span class="badge no">No code (soon)</span><a class="alink" href="https://arxiv.org/abs/2601.06378" target="_blank" rel="noopener">arXiv ↗</a></div>
+      <div class="foot"><span class="badge flag">Code coming soon</span><a class="alink" href="https://arxiv.org/abs/2601.06378" target="_blank" rel="noopener">arXiv ↗</a></div>
     </article>
     <article class="pcard glass reveal">
       <span class="rank">TOP 2</span>
@@ -247,7 +247,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
       <span class="venue">arXiv 2026 · 2512.10352</span>
       <p>Text→animal motion across 140 species and arbitrary skeletal topology (OmniZoo dataset, 33k sequences).</p>
       <div class="why">A text-driven motion source that already spans cats &amp; dogs — drop-in clip generation for our rig.</div>
-      <div class="foot"><span class="badge no">No code</span><a class="alink" href="https://arxiv.org/abs/2512.10352" target="_blank" rel="noopener">arXiv ↗</a></div>
+      <div class="foot"><span class="badge no">No code yet</span><a class="alink" href="https://arxiv.org/abs/2512.10352" target="_blank" rel="noopener">arXiv ↗</a></div>
     </article>
     <article class="pcard glass reveal">
       <span class="rank">TOP 3 · BUILT</span>
@@ -313,7 +313,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
       <span class="venue">arXiv 2026 · 2604.17623</span>
       <p>Video-informed pose spaces for auto-rigged meshes — a species-agnostic pose manifold (127k poses, 100+ species).</p>
       <div class="why">Pose-space retargeting + editing for quadrupeds without artist-authored 4D data.</div>
-      <div class="foot"><span class="badge no">No code</span><a class="alink" href="https://arxiv.org/abs/2604.17623" target="_blank" rel="noopener">arXiv ↗</a></div>
+      <div class="foot"><span class="badge no">No code yet</span><a class="alink" href="https://arxiv.org/abs/2604.17623" target="_blank" rel="noopener">arXiv ↗</a></div>
     </article>
   </div>
 
@@ -343,27 +343,28 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
 <!-- ============== MATRIX ============== -->
 <section id="matrix" class="wrap">
   <div class="eyebrow reveal">Decision matrix</div>
-  <div class="sec-head reveal"><span class="num">04</span><h2 class="title">Every shortlisted paper, by buildability</h2></div>
+  <div class="sec-head reveal"><span class="num">04</span><h2 class="title">Every evaluated paper, by buildability</h2></div>
   <div class="tablewrap reveal">
     <table>
-      <thead><tr><th>Paper</th><th>Cat.</th><th>Venue</th><th>Code</th><th>Weights</th><th>Fits this box</th><th>Status</th></tr></thead>
+      <thead><tr><th>Paper</th><th>Cat.</th><th>Venue</th><th>Code</th><th>Weights</th><th>Min specs to run</th><th>Status</th></tr></thead>
       <tbody>
-        <tr><td><b>Skin Tokens / TokenRig</b></td><td>Rig</td><td>SIGGRAPH 2026</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-yes">Built · cat+pug</td></tr>
-        <tr><td><b>AnyTop</b></td><td>Animate</td><td>SIGGRAPH 2025</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-yes">yes (pure-py)</td><td class="s-yes">Built · cat+puppy</td></tr>
-        <tr><td><b>MatLat</b></td><td>Generate</td><td>CVPR 2026</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-no">no · needs nvcc/MSVC</td><td class="s-mid">Flagged · toolchain</td></tr>
-        <tr><td>MoCapAnything</td><td>Retarget</td><td>arXiv 2026</td><td class="s-mid">unofficial</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-mid">Flagged · no weights</td></tr>
-        <tr><td>4D-Animal</td><td>Animate</td><td>WACV 2026</td><td class="s-yes">yes</td><td class="s-mid">partial</td><td class="s-no">no · Linux/cu121/DensePose</td><td class="s-no">Flagged · platform</td></tr>
-        <tr><td>SPRig</td><td>Rig</td><td>arXiv 2026</td><td class="s-mid">colab/wip</td><td class="s-mid">drive</td><td class="s-mid">mesh-seq input</td><td class="s-mid">Flagged · WIP</td></tr>
-        <tr><td>Rigel3D</td><td>Generate</td><td>arXiv 2026</td><td class="s-no">no</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
-        <tr><td>Strips as Tokens (SATO)</td><td>Generate</td><td>SIGGRAPH 2026</td><td class="s-no">placeholder</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
-        <tr><td>RigMo</td><td>Animate</td><td>arXiv 2026</td><td class="s-no">soon</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
-        <tr><td>OmniZoo / Topo-Agnostic</td><td>Animate</td><td>arXiv 2026</td><td class="s-no">no</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
-        <tr><td>ViPS</td><td>Retarget</td><td>arXiv 2026</td><td class="s-no">no</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
-        <tr><td><b>MORPHOS</b></td><td>Animate · 4D</td><td>arXiv 2026</td><td class="s-no">teaser</td><td class="s-no">no</td><td class="s-no">no · B200-scale</td><td class="s-no">Flagged · no code</td></tr>
-        <tr><td><b>TRELLIS</b> (SLAT)</td><td>Generate</td><td>CVPR 2025</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-mid">16 GB · needs CUDA build</td><td class="s-mid">Flagged · toolchain</td></tr>
+        <tr><td><b>Skin Tokens / TokenRig</b></td><td>Rig</td><td>SIGGRAPH 2026</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td>≈8 GB CUDA GPU</td><td class="s-yes">Built · cat+pug</td></tr>
+        <tr><td><b>AnyTop</b></td><td>Animate</td><td>SIGGRAPH 2025</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td>≈4 GB GPU · CPU ok</td><td class="s-yes">Built · cat+puppy</td></tr>
+        <tr><td><b>MatLat</b></td><td>Generate</td><td>CVPR 2026</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td>16 GB GPU + CUDA/MSVC build</td><td class="s-mid">Flagged · toolchain</td></tr>
+        <tr><td>MoCapAnything</td><td>Retarget</td><td>arXiv 2026</td><td class="s-mid">unofficial</td><td class="s-no">no</td><td>n/a · weights unreleased</td><td class="s-mid">Flagged · no weights</td></tr>
+        <tr><td>4D-Animal</td><td>Animate</td><td>WACV 2026</td><td class="s-yes">yes</td><td class="s-mid">partial</td><td>Linux · CUDA 12.1 · PyTorch3D</td><td class="s-no">Flagged · platform</td></tr>
+        <tr><td>SPRig</td><td>Rig</td><td>arXiv 2026</td><td class="s-mid">colab (wip)</td><td class="s-mid">drive</td><td>GPU · needs 4D mesh-seq input</td><td class="s-mid">Flagged · WIP</td></tr>
+        <tr><td>Rigel3D</td><td>Generate</td><td>arXiv 2026</td><td class="s-no">none</td><td class="s-no">no</td><td>—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>Strips as Tokens (SATO)</td><td>Generate</td><td>SIGGRAPH 2026</td><td class="s-mid">coming soon</td><td class="s-no">no</td><td>—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>RigMo</td><td>Animate</td><td>arXiv 2026</td><td class="s-mid">coming soon</td><td class="s-no">no</td><td>—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>OmniZoo / Topo-Agnostic</td><td>Animate</td><td>arXiv 2026</td><td class="s-no">none</td><td class="s-no">no</td><td>—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>ViPS</td><td>Retarget</td><td>arXiv 2026</td><td class="s-no">none</td><td class="s-no">no</td><td>—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td><b>MORPHOS</b></td><td>Animate · 4D</td><td>arXiv 2026</td><td class="s-mid">coming soon</td><td class="s-no">no</td><td>B200-class (180 GB bench)</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td><b>TRELLIS</b> (SLAT)</td><td>Generate</td><td>CVPR 2025</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td>16 GB GPU (fp16) + CUDA build</td><td class="s-mid">Flagged · toolchain</td></tr>
       </tbody>
     </table>
   </div>
+  <p class="lead reveal" style="margin-top:16px;font-size:.92rem"><b class="muted">Code-status nuance:</b> of the papers without usable code, only <b class="muted">3 — RigMo, SATO and MORPHOS — say code is "coming soon"</b> (amber in the Code column); <b class="muted">Rigel3D, OmniZoo and ViPS</b> have no repo or release promise at all (red). MoCapAnything ships only an unofficial reimplementation (weights missing) and SPRig only raw Colab notebooks.</p>
   <p class="lead reveal" style="margin-top:18px;font-size:.96rem">Honorable mentions (animal-specific, code present but out of scope here): <a class="inline" href="https://arxiv.org/abs/2603.07441" target="_blank" rel="noopener">DogWeave</a> &amp; DogRecon (single-image dog recon), <a class="inline" href="https://arxiv.org/abs/2601.07272" target="_blank" rel="noopener">PALUM</a> / <a class="inline" href="https://arxiv.org/abs/2506.11430" target="_blank" rel="noopener">Auto-Connect</a> (retarget/rig, no public code), <a class="inline" href="https://arxiv.org/abs/2602.06548" target="_blank" rel="noopener">NECromancer</a> (BVH motion tokens), <a class="inline" href="https://arxiv.org/abs/2508.05162" target="_blank" rel="noopener">X-MoGen</a>.</p>
 </section>
 <hr class="div"/>
