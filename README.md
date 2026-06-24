@@ -1,6 +1,6 @@
 # Temporial Research — SIGGRAPH × CVPR 2026 pipeline scan
 
-A scan of 2026 SIGGRAPH/CVPR papers across the three stages of the Ani3D reskin pipeline —
+A scan of 2026 SIGGRAPH/CVPR papers across the three stages of the Temporial Labs reskin pipeline —
 **making production-ready 3D models**, **animating them**, and **retargeting mocap** — with the
 top 3 picks per stage, then every paper with open code that fits a single 16 GB GPU **built and
 tested live on a cat & pug**.
