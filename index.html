@@ -261,19 +261,19 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
 
   <div class="build reveal">
     <div class="build-head"><span class="tag">Built &amp; tested</span><h3>AnyTop — generated novel Cat &amp; Puppy motion</h3></div>
-    <p class="sub">Ran the pre-trained <code>quadropeds</code> model (190k steps) to synthesize fresh motion for the Truebones <b>Cat</b> and <b>Puppy</b> skeletons — no dataset purchase needed, just the released <code>cond.npy</code>. 100-step diffusion + IK, ~5&nbsp;s/clip on the 5070&nbsp;Ti. Left tile = the model's stick-figure render (MP4); right tile = the generated <code>.bvh</code> rebuilt as an interactive animated skeleton (drag to orbit, autoplays).</p>
+    <p class="sub">Ran the pre-trained <code>quadropeds</code> model (190k steps) to synthesize fresh motion for the Truebones <b>Cat</b> and <b>Puppy</b> skeletons — no dataset purchase needed, just the released <code>cond.npy</code>. 100-step diffusion + IK, ~5&nbsp;s/clip on the 5070&nbsp;Ti. Left tile = a rendered GIF of the generated motion; right tile = the same <code>.bvh</code> as an interactive animated skeleton (drag to orbit, autoplays).</p>
     <div class="specimen">
       <div class="spec">
         <div class="cap"><span class="t">🐱 Cat skeleton</span><span class="d">32 joints · 20 fps</span></div>
         <div class="media2">
-          <div class="tile"><span class="lbl">MP4 · motion</span><video src="media/anytop_cat.mp4" autoplay loop muted playsinline></video></div>
+          <div class="tile"><span class="lbl">GIF · motion</span><img loading="eager" src="media/anytop_cat.gif" alt="AnyTop generated cat motion"></div>
           <div class="tile"><span class="lbl">3D · drag</span><model-viewer loading="eager" reveal="auto" src="media/anytop_cat_skel.glb" camera-controls autoplay animation-name="anytop_cat" interaction-prompt="none" exposure="1.1" shadow-intensity="0"></model-viewer></div>
         </div>
       </div>
       <div class="spec">
         <div class="cap"><span class="t">🐶 Puppy skeleton</span><span class="d">30 joints · 20 fps</span></div>
         <div class="media2">
-          <div class="tile"><span class="lbl">MP4 · motion</span><video src="media/anytop_puppy.mp4" autoplay loop muted playsinline></video></div>
+          <div class="tile"><span class="lbl">GIF · motion</span><img loading="eager" src="media/anytop_puppy.gif" alt="AnyTop generated puppy motion"></div>
           <div class="tile"><span class="lbl">3D · drag</span><model-viewer loading="eager" reveal="auto" src="media/anytop_puppy_skel.glb" camera-controls autoplay animation-name="anytop_puppy" interaction-prompt="none" exposure="1.1" shadow-intensity="0"></model-viewer></div>
         </div>
       </div>
@@ -288,7 +288,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
 <section id="cat3" class="wrap">
   <div class="eyebrow reveal">Category 3</div>
   <div class="sec-head reveal"><span class="num">03</span><h2 class="title">Retargeting mocap onto 3D models</h2></div>
-  <p class="lead reveal">Retargeting binds to the rig + skin. Our engine is already a 2026 paper (Skin Tokens / TokenRig); these three frame the space — video→BVH retarget, the rig engine itself, and a quadruped pose manifold.</p>
+  <p class="lead reveal">Retargeting binds to the rig + skin. These three frame the space — video→BVH retarget, the rig+skin model itself, and a quadruped pose manifold.</p>
 
   <div class="papers">
     <article class="pcard glass reveal">
@@ -304,7 +304,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
       <h3>Skin Tokens / TokenRig</h3>
       <span class="venue">SIGGRAPH 2026 · 2602.04805</span>
       <p>Unified autoregressive rigging + skinning via learned skin tokens; reports +98–133% skinning accuracy over prior.</p>
-      <div class="why">This <i>is</i> our rig engine. Re-run fresh on cat &amp; pug as the live Category-3 result.</div>
+      <div class="why">Unified rig + skin in one pass — the substrate retargeting binds to; we run it fresh on cat &amp; pug as the live Category-3 result.</div>
       <div class="foot"><span class="badge built">Built ✓</span><a class="alink" href="https://arxiv.org/abs/2602.04805" target="_blank" rel="noopener">arXiv ↗</a></div>
     </article>
     <article class="pcard glass reveal">
@@ -319,7 +319,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
 
   <div class="build reveal">
     <div class="build-head"><span class="tag">Built &amp; tested</span><h3>TokenRig — auto-rigged cat &amp; pug</h3></div>
-    <p class="sub">Ran <code>demo.py --use_transfer</code> (free-gen) on both raw meshes. Each got a full skeleton + per-vertex skin in <b>~18–20&nbsp;s</b> on the 5070&nbsp;Ti, with original textures and geometry preserved. Left tile = turntable GIF of the rigged result; right tile = the interactive rigged GLB (drag to orbit). Web GLBs are draco-compressed + 1k textures (33→3.3&nbsp;MB, 44→3.6&nbsp;MB).</p>
+    <p class="sub">Ran the released model in free-gen, texture-preserving mode on both raw meshes. Each got a full skeleton + per-vertex skin in <b>~18–20&nbsp;s</b> on the 5070&nbsp;Ti, with original textures and geometry preserved. Left tile = turntable GIF of the rigged result; right tile = the interactive rigged GLB (drag to orbit). Web GLBs are draco-compressed + 1k textures (33→3.3&nbsp;MB, 44→3.6&nbsp;MB).</p>
     <div class="specimen">
       <div class="spec">
         <div class="cap"><span class="t">🐱 Cat</span><span class="d">27 joints · 5,568 tris</span></div>
@@ -375,7 +375,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
   <div class="sec-head reveal"><span class="num">05</span><h2 class="title">How this was built — and the caveats</h2></div>
   <div class="callout info reveal">
     <p style="margin-bottom:8px"><b>Hardware:</b> RTX 5070&nbsp;Ti (16&nbsp;GB, Blackwell sm_120), Ryzen 7 7800X3D, 31&nbsp;GB RAM, Windows 11. torch 2.x + cu128. No CUDA/C++ toolchain (prebuilt wheels only).</p>
-    <p style="margin-bottom:8px"><b>TokenRig:</b> existing <code>SkinTokens/.venv</code>, <code>demo.py --use_transfer</code> on the raw cat/pug GLBs → 27/28-joint rigs, textures kept. Turntables rendered headless in Blender (EEVEE).</p>
+    <p style="margin-bottom:8px"><b>TokenRig:</b> ran the released model (free-gen, texture-preserving) on the raw cat/pug GLBs → 27/28-joint rigs, textures kept. Turntables rendered headless in Blender (EEVEE).</p>
     <p style="margin-bottom:8px"><b>AnyTop:</b> fresh py3.10 venv (torch cu128 — its pinned cu121 won't run on Blackwell), <code>quadropeds</code> checkpoint + released <code>cond.npy</code>; generated Cat &amp; Puppy clips; BVH rebuilt to an animated GLB for the viewer.</p>
     <p><b>Caveats:</b> AnyTop is SIGGRAPH <b>2025</b> (the 2026 animal-motion papers are code-gated) and its output isn't yet retargeted to our rig. MatLat is genuinely runnable but needs a compiler this box lacks, so its tiles are the <b>authors' results</b>. All "no-code" flags reflect repo state as of this scan (Jun 2026) and may change.</p>
   </div>
