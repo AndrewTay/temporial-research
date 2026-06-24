@@ -4,6 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SIGGRAPH × CVPR 2026 — Ani3D Pipeline Scan</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png" />
+<link rel="shortcut icon" href="assets/favicon.ico" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -38,7 +43,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:120;border-bottom:1px solid tran
 nav.scrolled{background:rgba(6,8,13,.62);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid var(--line)}
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
 .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
-.brand .dot{width:24px;height:24px;border-radius:7px;background:var(--grad);box-shadow:0 0 18px rgba(124,196,255,.5)}
+.brand .logo{width:24px;height:24px;display:block;filter:drop-shadow(0 0 9px rgba(124,196,255,.5))}
 .brand .wm{font-weight:600;font-size:1.02rem;letter-spacing:.04em}
 .nav-links{display:flex;gap:24px;align-items:center}
 .nav-links a{color:var(--ink-2);text-decoration:none;font-size:.82rem;font-weight:500;transition:color .25s}
@@ -150,7 +155,7 @@ hr.div{border:0;border-top:1px solid var(--line);margin:0}
 
 <nav id="nav">
   <div class="nav-in">
-    <a class="brand" href="#top"><span class="dot"></span><span class="wm">Ani3D · 2026 Scan</span></a>
+    <a class="brand" href="#top"><img class="logo" src="assets/logo-mark.svg" alt="Temporal" width="24" height="24" /><span class="wm">Ani3D · 2026 Scan</span></a>
     <div class="nav-links">
       <a href="#cat1">Generate</a>
       <a href="#cat2">Animate</a>

@@ -1,0 +1,9 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#ffffff" stroke-width="2.5" fill="none" opacity="0.28">
+    <path d="M40 44 H92 V58 H73 V100 H59 V58 H40 Z" transform="translate(16,-14)"></path>
+  </g>
+  <g stroke="#ffffff" stroke-width="2.5" fill="none" opacity="0.5">
+    <path d="M40 44 H92 V58 H73 V100 H59 V58 H40 Z" transform="translate(8,-7)"></path>
+  </g>
+  <path d="M40 44 H92 V58 H73 V100 H59 V58 H40 Z" fill="#ffffff"></path>
+</svg>
