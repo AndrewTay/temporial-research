@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SIGGRAPH × CVPR 2026 — Ani3D Pipeline Scan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script type="module" src="vendor/model-viewer.min.js"></script>
+<style>
+:root{
+  --bg:#06080d; --bg-2:#0a0d14;
+  --panel:rgba(13,17,25,.55); --panel-2:rgba(18,23,33,.66);
+  --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.18);
+  --ink:#eef2f7; --ink-2:#aeb9c9; --ink-3:#79849a;
+  --accent:#7cc4ff; --accent-2:#a9b8ff; --warm:#f0c478;
+  --good:#5ef0a8; --bad:#ff8a8a;
+  --grad:linear-gradient(100deg,#bfe4ff 0%,#7cc4ff 42%,#a9b8ff 100%);
+  --maxw:1180px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --glass-blur:blur(16px) saturate(140%);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.bg-glow{position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(820px 520px at 80% -8%, rgba(124,196,255,.12), transparent 60%),
+    radial-gradient(720px 600px at 4% 14%, rgba(169,184,255,.08), transparent 60%),
+    radial-gradient(900px 700px at 50% 118%, rgba(124,196,255,.06), transparent 60%);}
+.bg-vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(125% 125% at 50% 0%, transparent 56%, rgba(0,0,0,.55) 100%);}
+
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:120;border-bottom:1px solid transparent;transition:background .35s,border-color .35s,backdrop-filter .35s}
+nav.scrolled{background:rgba(6,8,13,.62);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid var(--line)}
+.nav-in{max-width:var(--maxw);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
+.brand .dot{width:24px;height:24px;border-radius:7px;background:var(--grad);box-shadow:0 0 18px rgba(124,196,255,.5)}
+.brand .wm{font-weight:600;font-size:1.02rem;letter-spacing:.04em}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-links a{color:var(--ink-2);text-decoration:none;font-size:.82rem;font-weight:500;transition:color .25s}
+.nav-links a:hover{color:var(--ink)}
+@media(max-width:860px){.nav-links{display:none}}
+
+/* layout */
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:clamp(56px,8vh,104px) 0;position:relative;z-index:1}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:10px;margin-bottom:18px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);opacity:.7}
+h1,h2,h3{font-weight:600;letter-spacing:-.025em;line-height:1.12}
+h2.title{font-size:clamp(1.7rem,3.4vw,2.5rem);max-width:24ch;margin-bottom:16px}
+.lead{font-size:clamp(1rem,1.4vw,1.18rem);color:var(--ink-2);max-width:70ch;font-weight:300}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.muted{color:var(--ink-2)} .dim{color:var(--ink-3)}
+a.inline{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(124,196,255,.3)}
+a.inline:hover{color:#fff}
+
+/* hero */
+.hero{min-height:78svh;display:flex;align-items:center;text-align:center;padding:128px 0 56px}
+.hero-inner{max-width:60rem;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+.hero h1{font-size:clamp(2.1rem,4.6vw,3.6rem);margin:8px 0 22px;max-width:20ch}
+.hero .lead{margin:0 auto 30px;max-width:62ch;text-align:center}
+.pills{margin-top:8px;display:flex;gap:10px 12px;flex-wrap:wrap;justify-content:center}
+.pill{font-family:var(--mono);font-size:.72rem;letter-spacing:.03em;color:var(--ink-2);border:1px solid var(--line);background:var(--panel);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-radius:999px;padding:7px 14px}
+.pill b{color:var(--accent);font-weight:600}
+
+/* glass + cards */
+.glass{background:var(--panel);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.sec-head .num{font-family:var(--mono);color:var(--accent);font-size:.8rem}
+
+/* paper cards */
+.papers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+@media(max-width:880px){.papers{grid-template-columns:1fr}}
+.pcard{border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s}
+.pcard:hover{transform:translateY(-3px);border-color:var(--line-2)}
+.pcard .rank{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);letter-spacing:.1em}
+.pcard h3{font-size:1.12rem}
+.pcard .venue{font-family:var(--mono);font-size:.68rem;color:var(--accent-2);letter-spacing:.03em}
+.pcard p{font-size:.9rem;color:var(--ink-2);font-weight:300}
+.pcard .why{font-size:.86rem;color:var(--ink);border-left:2px solid rgba(124,196,255,.4);padding-left:11px}
+.pcard .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px}
+.badge{font-family:var(--mono);font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:4px 10px;border:1px solid}
+.badge.built{color:var(--good);border-color:rgba(94,240,168,.45);background:rgba(94,240,168,.06)}
+.badge.flag{color:var(--warm);border-color:rgba(240,196,120,.45);background:rgba(240,196,120,.06)}
+.badge.no{color:var(--bad);border-color:rgba(255,138,138,.4);background:rgba(255,138,138,.06)}
+.alink{font-family:var(--mono);font-size:.7rem;color:var(--ink-2);text-decoration:none;border:1px solid var(--line-2);border-radius:7px;padding:5px 10px;transition:.2s}
+.alink:hover{border-color:var(--accent);color:#fff}
+
+/* result showcase */
+.build{margin-top:30px;border:1px solid rgba(124,196,255,.22);border-radius:20px;padding:clamp(16px,2.4vw,26px);background:var(--panel);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}
+.build.flagged{border-color:rgba(240,196,120,.3)}
+.build-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.build-head .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.build-head h3{font-size:1.22rem}
+.build .sub{color:var(--ink-2);font-weight:300;font-size:.94rem;max-width:74ch;margin-bottom:18px}
+.stat{font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.stat b{color:var(--ink)}
+
+.specimen{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+@media(max-width:820px){.specimen{grid-template-columns:1fr}}
+.spec{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(10,13,20,.4)}
+.spec .cap{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line)}
+.spec .cap .t{font-weight:600;font-size:.95rem}
+.spec .cap .d{font-family:var(--mono);font-size:.66rem;color:var(--ink-3)}
+.media2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+.tile{position:relative;aspect-ratio:1;background:#0a0d14;display:flex;align-items:center;justify-content:center}
+.tile img,.tile video{width:100%;height:100%;object-fit:cover;display:block}
+.tile model-viewer{width:100%;height:100%;display:block;background:radial-gradient(circle at 50% 38%,#121826,#080b11);--progress-bar-color:var(--accent);--poster-color:transparent}
+.tile .lbl{position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:.58rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-2);background:rgba(6,8,13,.6);border:1px solid var(--line);border-radius:5px;padding:2px 7px;z-index:2}
+
+.gif3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+@media(max-width:820px){.gif3{grid-template-columns:1fr}}
+.gif3 figure{margin:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#0a0d14}
+.gif3 .ph{aspect-ratio:1;background:#0a0d14}
+.gif3 img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:1}
+.gif3 figcaption{padding:9px 12px;font-family:var(--mono);font-size:.66rem;color:var(--ink-3)}
+
+.callout{border-radius:13px;padding:14px 16px;font-size:.9rem;margin-top:18px;border:1px solid rgba(240,196,120,.35);background:rgba(240,196,120,.06);color:#ffe6bd}
+.callout b{color:#fff}
+.callout.info{border-color:rgba(124,196,255,.32);background:rgba(124,196,255,.06);color:#d8ecff}
+
+/* matrix table */
+.tablewrap{overflow-x:auto;margin-top:24px;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:760px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);background:rgba(255,255,255,.02)}
+td{color:var(--ink-2)} td b{color:var(--ink)}
+tr:last-child td{border-bottom:none}
+.s-yes{color:var(--good)} .s-no{color:var(--bad)} .s-mid{color:var(--warm)}
+
+/* refs + footer */
+.refs{display:flex;gap:9px 12px;flex-wrap:wrap;margin-top:22px}
+.refs a{font-family:var(--mono);font-size:.72rem;color:var(--ink-2);text-decoration:none;border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;transition:.22s}
+.refs a:hover{border-color:var(--accent);color:#fff}
+footer{border-top:1px solid var(--line);padding:30px 0 50px;margin-top:30px}
+.foot-in{max-width:var(--maxw);margin:0 auto;padding:0 24px;color:var(--ink-3);font-size:.78rem;font-family:var(--mono);letter-spacing:.02em}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+hr.div{border:0;border-top:1px solid var(--line);margin:0}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div><div class="bg-vignette"></div>
+
+<nav id="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top"><span class="dot"></span><span class="wm">Ani3D · 2026 Scan</span></a>
+    <div class="nav-links">
+      <a href="#cat1">Generate</a>
+      <a href="#cat2">Animate</a>
+      <a href="#cat3">Rig / Retarget</a>
+      <a href="#matrix">Matrix</a>
+      <a href="#method">Method</a>
+    </div>
+  </div>
+</nav>
+
+<a id="top"></a>
+<header class="hero wrap">
+  <div class="hero-inner">
+    <div class="eyebrow reveal">Research scan · SIGGRAPH 2026 · CVPR 2026</div>
+    <h1 class="reveal">2026 papers that could upgrade the <span class="grad">Ani3D pipeline</span></h1>
+    <p class="lead reveal">A scan of this year's SIGGRAPH &amp; CVPR work across the three stages of our reskin pipeline —
+      <b class="muted">making production-ready 3D models</b>, <b class="muted">animating them</b>, and <b class="muted">retargeting mocap</b>.
+      Top&nbsp;3 picks per stage, then every paper with open code that fits this box — built and tested live on our <b class="muted">cat</b> &amp; <b class="muted">pug</b>.</p>
+    <div class="pills reveal">
+      <span class="pill"><b>3</b> stages</span>
+      <span class="pill"><b>11</b> papers evaluated</span>
+      <span class="pill"><b>2</b> pipelines built &amp; tested</span>
+      <span class="pill"><b>2</b> flagged · toolchain</span>
+      <span class="pill"><b>9</b> flagged · no code/weights</span>
+      <span class="pill">RTX 5070&nbsp;Ti · 16&nbsp;GB · Win&nbsp;11</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============== CATEGORY 1 ============== -->
+<section id="cat1" class="wrap">
+  <div class="eyebrow reveal">Category 1</div>
+  <div class="sec-head reveal"><span class="num">01</span><h2 class="title">Creating production-ready 3D models</h2></div>
+  <p class="lead reveal">Our upstream is Hunyuan3D-2 plus hand-authored base archetypes; the open per-upload gap is <b class="muted">texture transfer</b> (still a passthrough). These three target topology, riggable generation, and PBR texturing.</p>
+
+  <div class="papers">
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 1</span>
+      <h3>MatLat</h3>
+      <span class="venue">CVPR 2026 · Highlight · KAIST</span>
+      <p>Material Latent Space for PBR texture generation — albedo / normal / roughness / metallic on a given mesh from text + geometry.</p>
+      <div class="why">Directly attacks our #1 critical path: the texture-transfer stub. Code + weights released.</div>
+      <div class="foot"><span class="badge flag">Flagged · toolchain</span><a class="alink" href="https://arxiv.org/abs/2512.17302" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 2</span>
+      <h3>Rigel3D</h3>
+      <span class="venue">arXiv 2026 · 2605.13129</span>
+      <p>Rig-aware latents that jointly generate geometry + skeleton + skin weights, so assets are born rigged.</p>
+      <div class="why">Bullseye for authoring our base archetypes already rigged — collapses generate+rig into one step.</div>
+      <div class="foot"><span class="badge no">No code</span><a class="alink" href="https://arxiv.org/abs/2605.13129" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 3</span>
+      <h3>Strips as Tokens (SATO)</h3>
+      <span class="venue">SIGGRAPH 2026 · ACM TOG</span>
+      <p>Artist mesh generation with native UV segmentation — clean quad/tri edge-flow and ready-made UV charts.</p>
+      <div class="why">Fixes the topology + UV loss from our decimation step, giving bake-ready charts for texturing.</div>
+      <div class="foot"><span class="badge no">No code (placeholder)</span><a class="alink" href="https://arxiv.org/abs/2604.09132" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+  </div>
+
+  <div class="build flagged reveal">
+    <div class="build-head"><span class="tag">Built? · Flagged</span><h3>MatLat — toolchain-blocked on this box</h3></div>
+    <p class="sub">MatLat's inference render core is <code>nvdiffrast</code> (rasterize / interpolate / texture / antialias) which JIT-compiles CUDA, plus <code>cvcuda</code> for UV padding. This machine has no <code>nvcc</code> / MSVC and no CUDA Toolkit, so the renderer can't build — and per the A4D pilot, installing that toolchain was deliberately avoided. The <b>authors' own published results</b> (not ours) live on their project page — linked below to avoid rehosting their media — and illustrate the capability we'd gain once a compiler is available.</p>
+    <div class="callout info" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <span>MatLat result clips are the authors' own media.</span>
+      <a class="alink" href="https://matlat-proj.github.io/" target="_blank" rel="noopener">View authors' results ↗</a>
+    </div>
+    <div class="callout"><b>To unblock:</b> install CUDA Toolkit 12.8 + MSVC Build Tools (~8–10&nbsp;GB), then <code>pip install nvdiffrast</code> and shim <code>cvcuda</code>→<code>cv2.inpaint</code>. Watch 16&nbsp;GB VRAM (SD3.5 + T5) — likely needs 8-bit / SD3.5-medium.</div>
+  </div>
+  <div class="callout info"><b>Foundation · TRELLIS</b> (CVPR 2025 Spotlight, Microsoft — <i>Structured 3D Latents</i>): the SLAT image/text→3D model that the 2026 4D work (MORPHOS) extends — a production-grade alternative to Hunyuan3D-2 that also emits mesh + 3DGS + radiance. Code + weights are public and it fits 16&nbsp;GB (fp16), but it compiles the <b>same CUDA stack this box can't build</b> (nvdiffrast, spconv, kaolin, flash-attn, diffoctreerast) — runnable only via Docker/WSL or a prebuilt-wheel Windows fork. <a class="inline" href="https://github.com/microsoft/TRELLIS" target="_blank" rel="noopener">repo ↗</a></div>
+</section>
+<hr class="div"/>
+
+<!-- ============== CATEGORY 2 ============== -->
+<section id="cat2" class="wrap">
+  <div class="eyebrow reveal">Category 2</div>
+  <div class="sec-head reveal"><span class="num">02</span><h2 class="title">Animating 3D models</h2></div>
+  <p class="lead reveal">Our clips are hand-authored in Blender on the canonical rig. These three could grow the library automatically — rig+motion from mesh, text→animal motion, and topology-agnostic motion diffusion.</p>
+
+  <div class="papers">
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 1</span>
+      <h3>RigMo</h3>
+      <span class="venue">arXiv 2026 · 2601.06378</span>
+      <p>Unifies rig + motion learning from raw mesh sequences (Gaussian bones + skin), with a Motion-DiT for generation. Works on quadrupeds (fox).</p>
+      <div class="why">Could auto-discover rig and generate motion straight from a deforming mesh — a path past hand-keying.</div>
+      <div class="foot"><span class="badge no">No code (soon)</span><a class="alink" href="https://arxiv.org/abs/2601.06378" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 2</span>
+      <h3>OmniZoo / Topology-Agnostic Animal Motion</h3>
+      <span class="venue">arXiv 2026 · 2512.10352</span>
+      <p>Text→animal motion across 140 species and arbitrary skeletal topology (OmniZoo dataset, 33k sequences).</p>
+      <div class="why">A text-driven motion source that already spans cats &amp; dogs — drop-in clip generation for our rig.</div>
+      <div class="foot"><span class="badge no">No code</span><a class="alink" href="https://arxiv.org/abs/2512.10352" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 3 · BUILT</span>
+      <h3>AnyTop</h3>
+      <span class="venue">SIGGRAPH 2025 · 2502.17327</span>
+      <p>Character-animation diffusion for <i>any</i> topology, conditioned only on the skeleton. Explicit <b>Quadruped</b> model.</p>
+      <div class="why">The one runnable representative — the 2026 animal-motion papers above are all code-gated. Pure-Python, no compiler.</div>
+      <div class="foot"><span class="badge built">Built ✓</span><a class="alink" href="https://arxiv.org/abs/2502.17327" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+  </div>
+
+  <div class="build reveal">
+    <div class="build-head"><span class="tag">Built &amp; tested</span><h3>AnyTop — generated novel Cat &amp; Puppy motion</h3></div>
+    <p class="sub">Ran the pre-trained <code>quadropeds</code> model (190k steps) to synthesize fresh motion for the Truebones <b>Cat</b> and <b>Puppy</b> skeletons — no dataset purchase needed, just the released <code>cond.npy</code>. 100-step diffusion + IK, ~5&nbsp;s/clip on the 5070&nbsp;Ti. Left tile = the model's stick-figure render (MP4); right tile = the generated <code>.bvh</code> rebuilt as an interactive animated skeleton (drag to orbit, autoplays).</p>
+    <div class="specimen">
+      <div class="spec">
+        <div class="cap"><span class="t">🐱 Cat skeleton</span><span class="d">32 joints · 20 fps</span></div>
+        <div class="media2">
+          <div class="tile"><span class="lbl">MP4 · motion</span><video src="media/anytop_cat.mp4" autoplay loop muted playsinline></video></div>
+          <div class="tile"><span class="lbl">3D · drag</span><model-viewer loading="eager" reveal="auto" src="media/anytop_cat_skel.glb" camera-controls autoplay animation-name="anytop_cat" interaction-prompt="none" exposure="1.1" shadow-intensity="0"></model-viewer></div>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="cap"><span class="t">🐶 Puppy skeleton</span><span class="d">30 joints · 20 fps</span></div>
+        <div class="media2">
+          <div class="tile"><span class="lbl">MP4 · motion</span><video src="media/anytop_puppy.mp4" autoplay loop muted playsinline></video></div>
+          <div class="tile"><span class="lbl">3D · drag</span><model-viewer loading="eager" reveal="auto" src="media/anytop_puppy_skel.glb" camera-controls autoplay animation-name="anytop_puppy" interaction-prompt="none" exposure="1.1" shadow-intensity="0"></model-viewer></div>
+        </div>
+      </div>
+    </div>
+    <div class="callout info"><b>Pipeline fit:</b> AnyTop emits a BVH on the Truebones Cat/Puppy skeleton. To drive our assets it still needs a name/rotation retarget onto the TokenRig canonical rig — a natural follow-up, and exactly what the (code-gated) <i>MoCapAnything</i> would automate.</div>
+  </div>
+  <div class="callout"><b>Also tracked · MORPHOS</b> (arXiv 2026, KAIST AI — <i>Autoregressive 4D Generation with Temporal Structured Latents</i>): dynamic 3D (mesh / 3DGS / radiance) generated straight from video — the SOTA successor to the <b>ActionMesh</b> 4D path we piloted in A4D, and it benchmarks against ActionMesh directly. <b>No code yet</b> (repo is a teaser; inference + weights "preparing for release") and timed on a <b>B200 · 180&nbsp;GB</b>, so it's unlikely to fit 16&nbsp;GB even once released. <a class="inline" href="https://arxiv.org/abs/2606.02491" target="_blank" rel="noopener">arXiv ↗</a></div>
+</section>
+<hr class="div"/>
+
+<!-- ============== CATEGORY 3 ============== -->
+<section id="cat3" class="wrap">
+  <div class="eyebrow reveal">Category 3</div>
+  <div class="sec-head reveal"><span class="num">03</span><h2 class="title">Retargeting mocap onto 3D models</h2></div>
+  <p class="lead reveal">Retargeting binds to the rig + skin. Our engine is already a 2026 paper (Skin Tokens / TokenRig); these three frame the space — video→BVH retarget, the rig engine itself, and a quadruped pose manifold.</p>
+
+  <div class="papers">
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 1</span>
+      <h3>MoCapAnything</h3>
+      <span class="venue">arXiv 2026 · 2512.10881</span>
+      <p>Monocular video + a rigged asset → a BVH that drives that asset; explicit cross-species / quadruped retarget.</p>
+      <div class="why">Literally "retarget mocap onto 3D models" for animals — would auto-bind AnyTop-style motion to our rig.</div>
+      <div class="foot"><span class="badge flag">Code · no weights</span><a class="alink" href="https://arxiv.org/abs/2512.10881" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 2 · BUILT</span>
+      <h3>Skin Tokens / TokenRig</h3>
+      <span class="venue">SIGGRAPH 2026 · 2602.04805</span>
+      <p>Unified autoregressive rigging + skinning via learned skin tokens; reports +98–133% skinning accuracy over prior.</p>
+      <div class="why">This <i>is</i> our rig engine. Re-run fresh on cat &amp; pug as the live Category-3 result.</div>
+      <div class="foot"><span class="badge built">Built ✓</span><a class="alink" href="https://arxiv.org/abs/2602.04805" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+    <article class="pcard glass reveal">
+      <span class="rank">TOP 3</span>
+      <h3>ViPS</h3>
+      <span class="venue">arXiv 2026 · 2604.17623</span>
+      <p>Video-informed pose spaces for auto-rigged meshes — a species-agnostic pose manifold (127k poses, 100+ species).</p>
+      <div class="why">Pose-space retargeting + editing for quadrupeds without artist-authored 4D data.</div>
+      <div class="foot"><span class="badge no">No code</span><a class="alink" href="https://arxiv.org/abs/2604.17623" target="_blank" rel="noopener">arXiv ↗</a></div>
+    </article>
+  </div>
+
+  <div class="build reveal">
+    <div class="build-head"><span class="tag">Built &amp; tested</span><h3>TokenRig — auto-rigged cat &amp; pug</h3></div>
+    <p class="sub">Ran <code>demo.py --use_transfer</code> (free-gen) on both raw meshes. Each got a full skeleton + per-vertex skin in <b>~18–20&nbsp;s</b> on the 5070&nbsp;Ti, with original textures and geometry preserved. Left tile = turntable GIF of the rigged result; right tile = the interactive rigged GLB (drag to orbit). Web GLBs are draco-compressed + 1k textures (33→3.3&nbsp;MB, 44→3.6&nbsp;MB).</p>
+    <div class="specimen">
+      <div class="spec">
+        <div class="cap"><span class="t">🐱 Cat</span><span class="d">27 joints · 5,568 tris</span></div>
+        <div class="media2">
+          <div class="tile"><span class="lbl">GIF · turntable</span><img loading="lazy" src="media/tokenrig_cat_turntable.gif" alt="cat rigged turntable"></div>
+          <div class="tile"><span class="lbl">3D · drag</span><model-viewer loading="eager" reveal="auto" src="media/cat_rigged_web.glb" camera-controls auto-rotate exposure="1.0" shadow-intensity="1" interaction-prompt="none"></model-viewer></div>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="cap"><span class="t">🐶 Pug</span><span class="d">28 joints · 16,244 tris</span></div>
+        <div class="media2">
+          <div class="tile"><span class="lbl">GIF · turntable</span><img loading="lazy" src="media/tokenrig_pug_turntable.gif" alt="pug rigged turntable"></div>
+          <div class="tile"><span class="lbl">3D · drag</span><model-viewer loading="eager" reveal="auto" src="media/pug_rigged_web.glb" camera-controls auto-rotate exposure="1.0" shadow-intensity="1" interaction-prompt="none"></model-viewer></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="div"/>
+
+<!-- ============== MATRIX ============== -->
+<section id="matrix" class="wrap">
+  <div class="eyebrow reveal">Decision matrix</div>
+  <div class="sec-head reveal"><span class="num">04</span><h2 class="title">Every shortlisted paper, by buildability</h2></div>
+  <div class="tablewrap reveal">
+    <table>
+      <thead><tr><th>Paper</th><th>Cat.</th><th>Venue</th><th>Code</th><th>Weights</th><th>Fits this box</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><b>Skin Tokens / TokenRig</b></td><td>Rig</td><td>SIGGRAPH 2026</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-yes">Built · cat+pug</td></tr>
+        <tr><td><b>AnyTop</b></td><td>Animate</td><td>SIGGRAPH 2025</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-yes">yes (pure-py)</td><td class="s-yes">Built · cat+puppy</td></tr>
+        <tr><td><b>MatLat</b></td><td>Generate</td><td>CVPR 2026</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-no">no · needs nvcc/MSVC</td><td class="s-mid">Flagged · toolchain</td></tr>
+        <tr><td>MoCapAnything</td><td>Retarget</td><td>arXiv 2026</td><td class="s-mid">unofficial</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-mid">Flagged · no weights</td></tr>
+        <tr><td>4D-Animal</td><td>Animate</td><td>WACV 2026</td><td class="s-yes">yes</td><td class="s-mid">partial</td><td class="s-no">no · Linux/cu121/DensePose</td><td class="s-no">Flagged · platform</td></tr>
+        <tr><td>SPRig</td><td>Rig</td><td>arXiv 2026</td><td class="s-mid">colab/wip</td><td class="s-mid">drive</td><td class="s-mid">mesh-seq input</td><td class="s-mid">Flagged · WIP</td></tr>
+        <tr><td>Rigel3D</td><td>Generate</td><td>arXiv 2026</td><td class="s-no">no</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>Strips as Tokens (SATO)</td><td>Generate</td><td>SIGGRAPH 2026</td><td class="s-no">placeholder</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>RigMo</td><td>Animate</td><td>arXiv 2026</td><td class="s-no">soon</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>OmniZoo / Topo-Agnostic</td><td>Animate</td><td>arXiv 2026</td><td class="s-no">no</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td>ViPS</td><td>Retarget</td><td>arXiv 2026</td><td class="s-no">no</td><td class="s-no">no</td><td class="s-mid">—</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td><b>MORPHOS</b></td><td>Animate · 4D</td><td>arXiv 2026</td><td class="s-no">teaser</td><td class="s-no">no</td><td class="s-no">no · B200-scale</td><td class="s-no">Flagged · no code</td></tr>
+        <tr><td><b>TRELLIS</b> (SLAT)</td><td>Generate</td><td>CVPR 2025</td><td class="s-yes">yes</td><td class="s-yes">yes</td><td class="s-mid">16 GB · needs CUDA build</td><td class="s-mid">Flagged · toolchain</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="lead reveal" style="margin-top:18px;font-size:.96rem">Honorable mentions (animal-specific, code present but out of scope here): <a class="inline" href="https://arxiv.org/abs/2603.07441" target="_blank" rel="noopener">DogWeave</a> &amp; DogRecon (single-image dog recon), <a class="inline" href="https://arxiv.org/abs/2601.07272" target="_blank" rel="noopener">PALUM</a> / <a class="inline" href="https://arxiv.org/abs/2506.11430" target="_blank" rel="noopener">Auto-Connect</a> (retarget/rig, no public code), <a class="inline" href="https://arxiv.org/abs/2602.06548" target="_blank" rel="noopener">NECromancer</a> (BVH motion tokens), <a class="inline" href="https://arxiv.org/abs/2508.05162" target="_blank" rel="noopener">X-MoGen</a>.</p>
+</section>
+<hr class="div"/>
+
+<!-- ============== METHOD ============== -->
+<section id="method" class="wrap">
+  <div class="eyebrow reveal">Method &amp; honesty notes</div>
+  <div class="sec-head reveal"><span class="num">05</span><h2 class="title">How this was built — and the caveats</h2></div>
+  <div class="callout info reveal">
+    <p style="margin-bottom:8px"><b>Hardware:</b> RTX 5070&nbsp;Ti (16&nbsp;GB, Blackwell sm_120), Ryzen 7 7800X3D, 31&nbsp;GB RAM, Windows 11. torch 2.x + cu128. No CUDA/C++ toolchain (prebuilt wheels only).</p>
+    <p style="margin-bottom:8px"><b>TokenRig:</b> existing <code>SkinTokens/.venv</code>, <code>demo.py --use_transfer</code> on the raw cat/pug GLBs → 27/28-joint rigs, textures kept. Turntables rendered headless in Blender (EEVEE).</p>
+    <p style="margin-bottom:8px"><b>AnyTop:</b> fresh py3.10 venv (torch cu128 — its pinned cu121 won't run on Blackwell), <code>quadropeds</code> checkpoint + released <code>cond.npy</code>; generated Cat &amp; Puppy clips; BVH rebuilt to an animated GLB for the viewer.</p>
+    <p><b>Caveats:</b> AnyTop is SIGGRAPH <b>2025</b> (the 2026 animal-motion papers are code-gated) and its output isn't yet retargeted to our rig. MatLat is genuinely runnable but needs a compiler this box lacks, so its tiles are the <b>authors' results</b>. All "no-code" flags reflect repo state as of this scan (Jun 2026) and may change.</p>
+  </div>
+  <div class="refs reveal">
+    <a href="https://arxiv.org/abs/2512.17302" target="_blank" rel="noopener">MatLat ↗</a>
+    <a href="https://arxiv.org/abs/2605.13129" target="_blank" rel="noopener">Rigel3D ↗</a>
+    <a href="https://arxiv.org/abs/2604.09132" target="_blank" rel="noopener">SATO ↗</a>
+    <a href="https://arxiv.org/abs/2601.06378" target="_blank" rel="noopener">RigMo ↗</a>
+    <a href="https://arxiv.org/abs/2512.10352" target="_blank" rel="noopener">OmniZoo ↗</a>
+    <a href="https://arxiv.org/abs/2502.17327" target="_blank" rel="noopener">AnyTop ↗</a>
+    <a href="https://arxiv.org/abs/2512.10881" target="_blank" rel="noopener">MoCapAnything ↗</a>
+    <a href="https://arxiv.org/abs/2602.04805" target="_blank" rel="noopener">Skin Tokens ↗</a>
+    <a href="https://arxiv.org/abs/2604.17623" target="_blank" rel="noopener">ViPS ↗</a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-in">Ani3D · SIGGRAPH 2026 × CVPR 2026 pipeline scan · built &amp; tested locally on cat + pug · June 2026</div>
+</footer>
+
+<script>
+  // nav glass on scroll
+  const nav=document.getElementById('nav');
+  const onScroll=()=>nav.classList.toggle('scrolled',window.scrollY>20);
+  onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
+  // reveal on scroll
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
